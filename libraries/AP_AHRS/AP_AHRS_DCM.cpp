@@ -1089,6 +1089,16 @@ bool AP_AHRS_DCM::airspeed_estimate(uint8_t airspeed_index, float &airspeed_ret)
     return true;
 }
 
+bool AP_AHRS_DCM::set_baro_at_home_location(int32_t baro_alt_cm) {
+    /* if we have a baro alt under 10m we will assume that we are on the ground and don't need this fix */ 
+    if (baro_alt_cm < 1000) {
+        _baro_alt_at_home_loc_cm = 0;
+    } else {
+        _baro_alt_at_home_loc_cm = baro_alt_cm;
+    }
+    return true;
+}
+
 bool AP_AHRS_DCM::set_home(const Location &loc)
 {
     // check location is valid
@@ -1105,7 +1115,8 @@ bool AP_AHRS_DCM::set_home(const Location &loc)
     if (!tmp.change_alt_frame(Location::AltFrame::ABSOLUTE)) {
         return false;
     }
-
+    
+    tmp.alt -= _baro_alt_at_home_loc_cm;
     _home = tmp;
     _home_is_set = true;
 

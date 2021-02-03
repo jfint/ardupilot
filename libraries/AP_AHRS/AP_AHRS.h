@@ -463,6 +463,9 @@ public:
     // returns the inertial navigation origin in lat/lon/alt
     virtual bool get_origin(Location &ret) const  WARN_IF_UNUSED { return false; }
 
+    // set the barometer hight in cm at the home location.
+    virtual bool set_baro_at_home_location(int32_t baro_alt_cm) {return false;}
+
     void Log_Write_Home_And_Origin();
 
     // return true if the AHRS object supports inertial navigation,

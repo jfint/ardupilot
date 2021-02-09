@@ -119,6 +119,8 @@ public:
     bool healthy() const override;
 
     bool get_velocity_NED(Vector3f &vec) const override;
+    
+    bool set_baro_at_home_location(int32_t baro_alt_cm) override;
 
     // returns false if we fail arming checks, in which case the buffer will be populated with a failure message
     // requires_position should be true if horizontal position configuration should be checked (not used)
@@ -215,4 +217,6 @@ private:
 
     // time when DCM was last reset
     uint32_t _last_startup_ms;
+
+    float _baro_alt_at_home_loc_cm = 0;
 };

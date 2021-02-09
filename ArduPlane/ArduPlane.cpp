@@ -366,6 +366,8 @@ void Plane::update_GPS_50Hz(void)
  */
 void Plane::update_GPS_10Hz(void)
 {
+    //the threshold for vdop when we trust the signal to not possibly be glitched
+    const int vdop_gps_glitch_threshold = 500;
     static uint32_t last_gps_msg_ms;
     if (gps.last_message_time_ms() != last_gps_msg_ms && gps.status() >= AP_GPS::GPS_OK_FIX_3D) {
         last_gps_msg_ms = gps.last_message_time_ms();
@@ -379,7 +381,8 @@ void Plane::update_GPS_10Hz(void)
             if (current_loc.lat == 0 && current_loc.lng == 0) {
                 ground_start_count = 5;
 
-            } else {
+            } else if (gps.get_vdop() < vdop_gps_glitch_threshold) //look for a good vdop before setting home to avoid glitches
+                ahrs.set_baro_at_home_location(AP::baro().get_altitude() * 100);
                 if (!set_home_persistently(gps.location())) {
                     // silently ignore failure...
                 }
